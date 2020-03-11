@@ -12,7 +12,7 @@ const bot = new Telegraf(BOT_TOKEN);
 
 
 const expressApp = express();
-bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
+bot.telegram.setWebhook(`${URL}:443/bot${BOT_TOKEN}`);
 expressApp.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
 
 
