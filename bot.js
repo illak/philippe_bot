@@ -146,7 +146,7 @@ bot.action('hoy', ctx => {
     let propuestas2020 = [...new Set(todayData.map(d => d.values[0].propuesta))].length;
 
     let res = `
-    ${ctx.chat.first_name}, estos son los números de ISEP al dia de hoy: *${today.getDate()}/${today.getMonth()}/${today.getFullYear()}*
+    ${ctx.chat.first_name}, estos son los números de ISEP al dia de hoy: *${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()}*
 
 - Hay *${cursantesUnicos}* personas cursando alguna unidad curricular en ISEP.
 - Hay *${d3.sum(todayData, d => d3.sum(d.values, d => +d.cursando) + d3.sum(d.values, d => +d.cursando_condicional) +
