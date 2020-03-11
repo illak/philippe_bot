@@ -277,7 +277,7 @@ bot.on('text', (ctx) => {
     sendStartMessage(ctx);
 });
 
-bot.launch();
+//bot.launch();
 
 expressApp.get('/', (req, res) => {
     res.send('Hello World!');
