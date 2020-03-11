@@ -3,9 +3,11 @@ const axios = require('axios');
 const d3 = require('d3');
 const htmlToText = require('html-to-text');
 
-//const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+const URL = process.env.URL || "https://philippebot.herokuapp.com/";
+const BOT_TOKEN = process.env.BOT_APIKEY || '';
 
-const bot = new Telegraf(process.env.BOT_APIKEY);
+const bot = new Telegraf(BOT_TOKEN);
 
 
 let dataStore = [];
@@ -268,5 +270,8 @@ function sendStartMessage(ctx) {
 bot.on('text', (ctx) => {
     sendStartMessage(ctx);
 });
+
+bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
+bot.startWebhook(`/bot${BOT_TOKEN}`, null, PORT);
 
 bot.launch();
