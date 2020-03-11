@@ -12,6 +12,7 @@ const bot = new Telegraf(BOT_TOKEN);
 
 
 const expressApp = express();
+bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
 expressApp.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
 
 
@@ -276,11 +277,12 @@ bot.on('text', (ctx) => {
     sendStartMessage(ctx);
 });
 
-bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
-//bot.startWebhook(`/bot${BOT_TOKEN}`, null, PORT);
-
 bot.launch();
 
-expressApp.listen(PORT, async () => {
-    console.log(`Listening on port ${PORT}!`);
+expressApp.get('/', (req, res) => {
+    res.send('Hello World!');
+  });
+
+expressApp.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
