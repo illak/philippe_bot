@@ -1,0 +1,19 @@
+{
+  "name": "factbots",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "d3": "^5.15.0",
+    "html-to-text": "^5.1.1",
+    "telegraf": "^3.33.3"
+  }
+}
