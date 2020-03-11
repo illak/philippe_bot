@@ -5,7 +5,7 @@ const htmlToText = require('html-to-text');
 const express = require('express');
 
 const PORT = process.env.PORT || 3000;
-const URL = process.env.URL || "https://philippebot.herokuapp.com/";
+const URL = process.env.URL || "https://philippebot.herokuapp.com";
 const BOT_TOKEN = process.env.BOT_APIKEY || '';
 
 const bot = new Telegraf(BOT_TOKEN);
