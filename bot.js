@@ -3,7 +3,7 @@ const axios = require('axios');
 const d3 = require('d3');
 const htmlToText = require('html-to-text');
 
-const port = process.env.PORT || 3000;
+//const port = process.env.PORT || 3000;
 
 const bot = new Telegraf(process.env.BOT_APIKEY);
 
