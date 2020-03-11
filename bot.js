@@ -281,6 +281,6 @@ bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
 
 bot.launch();
 
-expressApp.listen(port, async () => {
-    console.log(`Listening on port ${port}!`);
+expressApp.listen(PORT, async () => {
+    console.log(`Listening on port ${PORT}!`);
 });
