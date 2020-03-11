@@ -256,10 +256,10 @@ function sendStartMessage(ctx) {
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { text: 'Datos de hoy', callback_data: 'hoy' }
+                        { text: '📅 Datos de hoy', callback_data: 'hoy' }
                     ],
                     [
-                        { text: 'Monitor de cursada', url: 'https://sites.google.com/isep-cba.edu.ar/areaevaluacion/' }
+                        { text: '📊 Monitor de cursada', url: 'https://sites.google.com/isep-cba.edu.ar/areaevaluacion/' }
                     ]
                 ]
             }
