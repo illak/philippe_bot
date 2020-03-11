@@ -2,12 +2,17 @@ const Telegraf = require('telegraf');
 const axios = require('axios');
 const d3 = require('d3');
 const htmlToText = require('html-to-text');
+const express = require('express');
 
 const PORT = process.env.PORT || 3000;
 const URL = process.env.URL || "https://philippebot.herokuapp.com/";
 const BOT_TOKEN = process.env.BOT_APIKEY || '';
 
 const bot = new Telegraf(BOT_TOKEN);
+
+
+const expressApp = express();
+expressApp.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
 
 
 let dataStore = [];
@@ -271,7 +276,11 @@ bot.on('text', (ctx) => {
     sendStartMessage(ctx);
 });
 
-bot.telegram.setWebhook(`${URL}:443/bot${BOT_TOKEN}`);
-bot.startWebhook(`/bot${BOT_TOKEN}`, null, PORT);
+bot.telegram.setWebhook(`${URL}/bot${BOT_TOKEN}`);
+//bot.startWebhook(`/bot${BOT_TOKEN}`, null, PORT);
 
-//bot.launch();
+bot.launch();
+
+expressApp.listen(port, async () => {
+    console.log(`Listening on port ${port}!`);
+});
