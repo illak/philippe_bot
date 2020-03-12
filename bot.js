@@ -316,18 +316,7 @@ bot.on("inline_query", async ctx => {
 ===========================
 Propuesta: <b style="color:red;">${d.values[0].propuesta}</b>
 ===========================
-inicio: ${d.values[0].inicio.toLocaleString('es-ES', {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-            year: "numeric"
-        })}
-fin: ${d.values[0].fin.toLocaleString('es-ES', {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-            year: "numeric"
-        })}
+Período: ${d.values[0].inicio.getDate()}/${d.values[0].inicio.getMonth()+1}/${d.values[0].inicio.getFullYear()} - ${d.values[0].fin.getDate()}/${d.values[0].fin.getMonth()+1}/${d.values[0].fin.getFullYear()}
 ===========================
 ${
     d.values.map(val => {
