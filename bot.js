@@ -146,6 +146,8 @@ bot.action('hoy', ctx => {
 
     ctx.deleteMessage();
 
+    today = new Date();
+
     let res = `
     ${ctx.chat.first_name}, estos son los números de ISEP al dia de hoy: *${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()}*
 
