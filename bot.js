@@ -18,6 +18,8 @@ expressApp.use(bot.webhookCallback(`/bot${BOT_TOKEN}`));
 
 let dataStore = [];
 let cursantesUnicos = 0;
+let todayData = [];
+let propuestas2020 = 0;
 
 getData();
 
@@ -47,8 +49,6 @@ async function getData() {
         });
 
         let columns = dataClean.splice(0, 18);
-
-        console.log(columns);
 
         while (dataClean.length > 0) {
             let row = dataClean.splice(0, 18);
@@ -93,6 +93,24 @@ async function getData() {
             });
         }
 
+        console.log('Datos cargados! ', new Date());
+
+        let dataByPropuesta = d3.nest()
+            .key(d => d.siglas_carrera)
+            .key(d => d.idedicionmodulo)
+            .sortValues((a, b) => a.anio - b.anio).entries(dataStore);
+    
+    
+        let propuestas = d3.nest()
+            .key(d => d.siglas_carrera)
+            .entries(dataStore).map(d => d.key);
+    
+        filteredData = [].concat.apply([], dataByPropuesta.map(d => d.values));
+    
+        todayData = filteredData.filter(d => d.values[0].inicio <= Date.now() & d.values[0].fin >= Date.now());
+    
+        propuestas2020 = [...new Set(todayData.map(d => d.values[0].propuesta))].length;
+
     } catch (error) {
         console.log(error);
     }
@@ -128,24 +146,6 @@ bot.action('hoy', ctx => {
 
     ctx.deleteMessage();
 
-    let today = new Date();
-
-    let dataByPropuesta = d3.nest()
-        .key(d => d.siglas_carrera)
-        .key(d => d.idedicionmodulo)
-        .sortValues((a, b) => a.anio - b.anio).entries(dataStore);
-
-
-    let propuestas = d3.nest()
-        .key(d => d.siglas_carrera)
-        .entries(dataStore).map(d => d.key);
-
-    filteredData = [].concat.apply([], dataByPropuesta.map(d => d.values));
-
-    let todayData = filteredData.filter(d => d.values[0].inicio <= Date.now() & d.values[0].fin >= Date.now());
-
-    let propuestas2020 = [...new Set(todayData.map(d => d.values[0].propuesta))].length;
-
     let res = `
     ${ctx.chat.first_name}, estos son los números de ISEP al dia de hoy: *${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()}*
 
@@ -158,17 +158,34 @@ bot.action('hoy', ctx => {
 - pertenecientes a *${propuestas2020}* propuestas.
     `
 
-    bot.telegram.sendMessage(ctx.chat.id, res,
-        {
-            parse_mode: 'Markdown',
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        { text: 'Volver al menú principal', callback_data: 'start' }
+    let loadingText = `${ctx.chat.first_name}, necesito actualizar mis datos te pido que esperes un minuto y me vuelvas a consultar ⏲️`;
+
+    // Si todavía no hay datos, entonces envío mensaje de espera
+    if(dataStore && dataStore.length){
+        bot.telegram.sendMessage(ctx.chat.id, res,
+            {
+                parse_mode: 'Markdown',
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            { text: 'Volver al menú principal', callback_data: 'start' }
+                        ]
                     ]
-                ]
-            }
-        })
+                }
+            })
+    } else {
+        bot.telegram.sendMessage(ctx.chat.id, loadingText,
+            {
+                parse_mode: 'Markdown',
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            { text: 'Volver al menú principal', callback_data: 'start' }
+                        ]
+                    ]
+                }
+            })
+    }
 
 })
 
@@ -223,7 +240,6 @@ bot.command('modulos', ctx => {
 
         let todayData = dataStore.filter(d => d.inicio <= Date.now() & d.fin >= Date.now());
 
-        console.log(todayData);
 
         let message = 'Estos son los módulos que se están cursando actualmente: \n\n';
 
@@ -266,6 +282,9 @@ function sendStartMessage(ctx) {
                     ],
                     [
                         { text: '📊 Monitor de cursada', url: 'https://sites.google.com/isep-cba.edu.ar/areaevaluacion/' }
+                    ],
+                    [
+                        { text: "🔎 Consultar Unidades Curriculares", switch_inline_query_current_chat: ""}
                     ]
                 ]
             }
@@ -276,6 +295,84 @@ function sendStartMessage(ctx) {
 bot.on('text', (ctx) => {
     sendStartMessage(ctx);
 });
+
+
+//==========================================================
+// Busca unidades curriculares al día de hoy
+//==========================================================
+bot.on("inline_query", async ctx => {
+
+  
+    let results = [];
+
+    try{
+        if(todayData.length > 0){
+
+
+            const createMessageText = d => {
+                return `Módulo: <b>${d.values[0].unidad_curricular}</b>
+===========================
+Propuesta: <b style="color:red;">${d.values[0].propuesta}</b>
+===========================
+inicio: ${d.values[0].inicio.toLocaleString('es-ES', {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        })}
+fin: ${d.values[0].fin.toLocaleString('es-ES', {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        })}
+===========================
+${
+    d.values.map(val => {
+        return `<b>cohorte:</b> ${val.cohorte}
+<b>inscriptos a módulo:</b> ${+val.cursando + +val.cursando_condicional + +val.inscriptos + +val.inscriptos_condicionales + +val.aprobaron + +val.reprobaron + +val.desactivados + +val.abandonaron}
+<b>cursando:</b> ${+val.cursando + +val.cursando_condicional}
+<b>desactivados:</b> ${+val.desactivados}
+<b>abandonaron:</b> ${val.abandonaron}
+<b>reprobados:</b> ${+val.reprobaron}
+<b>aprobados:</b> ${+val.aprobaron}
+===========================
+`
+}).join('')
+}`}
+
+
+            const onlyQueryData = todayData.filter(data => {
+                let query = ctx.inlineQuery.query.toLowerCase();
+                return data.values[0].unidad_curricular.toLowerCase().includes(query);
+            }).slice(0, 30);;
+
+            results = onlyQueryData && onlyQueryData.length ?
+            onlyQueryData.map((data, id) => {return ({
+                id,
+                type: "article",
+                title: data.values[0].unidad_curricular,
+                description: data.values[0].propuesta,
+                input_message_content: {
+                    message_text: createMessageText(data),
+                    parse_mode: "HTML"
+                }
+            })
+
+            }) : [];
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    try{
+        ctx.answerInlineQuery(results);
+    } catch (error){
+        console.log(error);
+    }
+
+})
+
 
 //bot.launch();
 
