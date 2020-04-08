@@ -287,6 +287,9 @@ function sendStartMessage(ctx) {
                     ],
                     [
                         { text: "🔎 Consultar Unidades Curriculares", switch_inline_query_current_chat: ""}
+                    ],
+                    [
+                        { text: '📋 Feedback', url: 'https://docs.google.com/forms/d/e/1FAIpQLSc_oC-40v6YULyt0apXDO1Nx6snT4vsh7MLZIrtMf0VWoUp2Q/viewform?usp=sf_link' }
                     ]
                 ]
             }
