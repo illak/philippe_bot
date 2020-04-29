@@ -53,6 +53,9 @@ async function getData() {
         while (dataClean.length > 0) {
             let row = dataClean.splice(0, 18);
 
+            let fechaIniSplit = row[6].split('-');
+            let fechaFinSplit = row[7].split('-');
+
             dataStore.push({
                 //siglas_carrera
                 [columns[0]]: row[0],
@@ -67,9 +70,9 @@ async function getData() {
                 //unidad_curricular
                 [columns[5]]: row[5],
                 //inicio
-                [columns[6]]: new Date(row[6]),
+                [columns[6]]: new Date(fechaIniSplit[0], fechaIniSplit[1] - 1, fechaIniSplit[2]),
                 //fin
-                [columns[7]]: new Date(row[7]),
+                [columns[7]]: new Date(fechaFinSplit[0], fechaFinSplit[1] - 1, fechaFinSplit[2]),
                 //nroedicion
                 [columns[8]]: row[8],
                 //inscriptos
@@ -106,8 +109,11 @@ async function getData() {
             .entries(dataStore).map(d => d.key);
     
         filteredData = [].concat.apply([], dataByPropuesta.map(d => d.values));
+
+        let today = new Date();
+        today.setHours(0,0,0,0);
     
-        todayData = filteredData.filter(d => d.values[0].inicio <= Date.now() & d.values[0].fin >= Date.now());
+        todayData = filteredData.filter(d => d.values[0].inicio <= today & d.values[0].fin >= today);
     
         propuestas2020 = [...new Set(todayData.map(d => d.values[0].propuesta))].length;
 
